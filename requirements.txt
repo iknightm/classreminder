@@ -1,0 +1,8 @@
+streamlit
+datetime
+pandas
+schedule
+time
+smtplib
+MIMEText
+MIMEMultipart
