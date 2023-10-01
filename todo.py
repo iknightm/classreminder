@@ -2,6 +2,7 @@ import streamlit as st
 from datetime import datetime
 import pandas as pd
 import schedule
+import pytz
 import time
 import smtplib
 from email.mime.text import MIMEText
@@ -78,7 +79,7 @@ def schedule_class_email_notifications(class_name, day, time_slot, user_email):
 
     # Parse the start time of the class
     class_start_time = pd.to_datetime(time_slot.split("-")[0].strip())
-    class_start_time -= pd.Timedelta(minutes=5)  # 5 minutes before class starts
+    class_start_time -= pd.Timedelta(hours=5,minutes=35)  # 5 minutes before class starts
 
     # Schedule the email notification to be sent just before the class
     schedule.every().day.at(class_start_time.strftime("%H:%M")).do(send_email_notification)
@@ -110,7 +111,9 @@ def main_app():
                 st.warning("Please enter your email address before sending a trial notification.")
 
         # Display a clock showing the current time
-        current_time = time.strftime("%H:%M:%S")
+        delhi_timezone = pytz.timezone('Asia/Kolkata')
+        delhi_time = datetime.now(delhi_timezone)
+        current_time = delhi_time.strftime("%H:%M")
         st.subheader("Current Time:")
         st.write(current_time)
 
@@ -277,11 +280,13 @@ def send_custom_reminder(user_email, custom_time, custom_message):
         # Add the user to the sent_custom_reminders set to mark it as sent
         sent_custom_reminders.add(user_email)
 
+
     # Parse the custom_time string into a datetime object
     custom_time_dt = datetime.strptime(custom_time, "%H:%M")
+    custom_time_dt += pd.Timedelta(hours=5,minutes=30)
 
     # Schedule the custom reminder at the specified time
-    schedule.every().day.at(custom_time_dt.strftime("%H:%M")).do(send_email_notification)
+    schedule.every().day.at(custom_time_dt.strftime("%H:%M:%S")).do(send_email_notification)
 
 # Check if the user is logged in
 if __name__ == "__main__":
