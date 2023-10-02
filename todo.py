@@ -283,7 +283,7 @@ def send_custom_reminder(user_email, custom_time, custom_message):
 
     # Parse the custom_time string into a datetime object
     custom_time_dt = datetime.strptime(custom_time, "%H:%M")
-    custom_time_dt += pd.Timedelta(hours=5,minutes=30)
+    custom_time_dt -= pd.Timedelta(hours=5,minutes=30)
 
     # Schedule the custom reminder at the specified time
     schedule.every().day.at(custom_time_dt.strftime("%H:%M:%S")).do(send_email_notification)
